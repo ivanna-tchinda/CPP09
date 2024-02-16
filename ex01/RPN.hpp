@@ -16,6 +16,7 @@ public:
     void displayDeque(std::deque<char> rpn_deque);
     void calculDeque();
     int get_sign(char c);
+    int parseRPN(std::string arr);
     RPN();
     ~RPN();
 };

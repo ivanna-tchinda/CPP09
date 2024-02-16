@@ -23,8 +23,8 @@ void RPN::addDeque(std::string arr)
             rpn_deque_int.push_back(' ');
         }
     }
-    displayDeque(rpn_deque_int);
-    displayDeque(rpn_deque_op);
+    //displayDeque(rpn_deque_int);
+    //displayDeque(rpn_deque_op);
 }
 
 void RPN::displayDeque(std::deque<char> rpn_deque)
@@ -59,19 +59,21 @@ void RPN::calculDeque(void)
 {
     int i = 0;
     int _sign = 0;
-    int result = 0;
+    float result = 0;
     int size_op = rpn_deque_op.size();
-    //int size_int = rpn_deque_int.size();
 
-
-    int tmp_1 = rpn_deque_int[0] - 48;
-    int tmp_2 = rpn_deque_int[1] - 48;
+    float tmp_1;
+    float tmp_2;
+    std::deque<char>::iterator it = rpn_deque_int.begin();
     while(i < size_op)
     {
         if(rpn_deque_op[i] != ' ')
         {
-            tmp_2 = rpn_deque_int[i-1] - 48;
-            std::cout << "tmp1:" << tmp_1 << " tmp2:" << tmp_2 << std::endl;
+            while(*it != ' ' || *it != *rpn_deque_int.rbegin())
+                it++;
+            tmp_1 = *(it - 2) - 48;
+            tmp_2 = *(it - 1) - 48;
+            //std::cout << "tmp1:" << tmp_1 << " tmp2:" << tmp_2 << std::endl;
             _sign = get_sign(rpn_deque_op[i]);
             if(_sign == 1)
                 result = tmp_1 * tmp_2;
@@ -81,14 +83,28 @@ void RPN::calculDeque(void)
                 result = tmp_1 - tmp_2;
             else if(_sign == 4)
                 result = tmp_1 / tmp_2;
-            std::cout << result << std::endl;
-            rpn_deque_int[i] = result;
-            tmp_1 = result;
-            //tmp_2 = rpn_deque_int[i - 1] - 48;
+            *it = result + 48;
+            rpn_deque_int.erase(it - 2);
+            rpn_deque_int.erase(it - 1);
         }
         i++;
     }
-    displayDeque(rpn_deque_int);
+    std::cout << result << std::endl;
+}
+
+int RPN::parseRPN(std::string arr)
+{
+    int i = 0;
+    while(arr[i])
+    {
+        if(arr[i] == '(' || arr[i] == ')')
+        {
+            std::cout << "Error" << std::endl;
+            return(1);
+        }
+        i++;
+    }
+    return(0);
 }
 
 

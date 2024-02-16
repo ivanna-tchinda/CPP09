@@ -163,7 +163,7 @@ void BitcoinExchange::BitcoinFindValues()
                 std::cout << "Error: not a positive number" << std::endl;
                 continue;
             }
-            if(_value >= std::numeric_limits<int>::max())
+            if(_value > 1000)
             {
                 std::cout << "Error: too large a number" << std::endl;
                 continue;
