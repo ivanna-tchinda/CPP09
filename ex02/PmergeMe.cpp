@@ -4,6 +4,57 @@ PmergeMe::PmergeMe()
 {
 }
 
+double PmergeMe::elapsedTimeMicroseconds2() 
+{
+    double startMicroseconds = startTime2.tv_sec * 1000000 + startTime2.tv_usec;
+    double endMicroseconds = endTime2.tv_sec * 1000000 + endTime2.tv_usec;
+    return endMicroseconds - startMicroseconds;
+}
+
+double PmergeMe::elapsedTimeMicroseconds() 
+{
+    double startMicroseconds = startTime.tv_sec * 1000000 + startTime.tv_usec;
+    double endMicroseconds = endTime.tv_sec * 1000000 + endTime.tv_usec;
+    return endMicroseconds - startMicroseconds;
+}
+
+void PmergeMe::sortAllList(void)
+{
+    std::list<std::pair<int,int> >::iterator it = _list.begin();
+    std::list<std::pair<int,int> >::iterator it2 = _list2.begin();
+    std::list<std::pair<int,int> >::iterator it2_bis = _list2.begin();
+    while(it != _list.end())
+    {
+        while((*it2).second != (*it).second)
+            ++it2;
+        while(it2 != _list2.end())
+        {
+            it2_bis = it2;
+            ++it2_bis;
+            if(it2_bis == _list2.end() && ((*it).first > (*it2).first))
+            {
+                _list2.insert(it2_bis, *it);
+                _list.erase(it);
+                if((*it).first)
+                    it = _list.begin();
+                break;
+            }
+            else if((*it).first < (*it2).first)
+            {
+                _list2.insert(it2, *it);
+                _list.erase(it);
+                if((*it).first)
+                    it = _list.begin();
+                break;
+            }
+            else
+                it2++;
+        }
+    }
+    gettimeofday(&endTime2, NULL);
+    std::cout << "Time to process a range of " << (int)_list2.size() << " elements with std::list: " <<  elapsedTimeMicroseconds2() << "µs" << std::endl;
+}
+
 void PmergeMe::sortAll(void)
 {
     std::vector<std::pair<int,int> >::iterator it = _vec.begin();
@@ -13,50 +64,62 @@ void PmergeMe::sortAll(void)
         it2 = _vec2.begin() + (*it).second;
         while(it2 != _vec2.end())
         {
-            if((*it).first < (*it2).first)
+            if(it2 + 1 == _vec2.end() && ((*it).first > (*it2).first))
+            {
+                _vec2.insert(it2 + 1, *it);
+                _vec.erase(it);
+                if((*it).first)
+                    it = _vec.begin();
+                break;
+            }
+            else if((*it).first < (*it2).first)
             {
                 _vec2.insert(it2, *it);
                 _vec.erase(it);
-                it = _vec.begin();
+                if((*it).first)
+                    it = _vec.begin();
                 break;
             }
             else
                 it2++;
         }
     }
-    std::cout << "-------------------------------------------------------------------------" << std::endl;
-    std::cout << "Sorted: " << std::endl;
+    gettimeofday(&endTime, NULL);
     displayVec(_vec2);
+    std::cout << "Time to process a range of " << (int)_vec2.size() << " elements with std::vector: " << elapsedTimeMicroseconds() << "µs" << std::endl;
+
 }
 
-void PmergeMe::restoreKey(void)
+void PmergeMe::sortSmallest2(void)
 {
-    std::vector<std::pair<int,int> >::iterator it = _vec2.begin();
-    int i = 0;
-    while (it != _vec2.end())
+    std::pair<int, int> _smallest;
+    std::list<std::pair<int, int> >::iterator it = _list2.begin();
+    std::list<std::pair<int, int> >::iterator tmp = _list2.begin();
+    int i = 1;
+    int _times = 0;
+    while(_times < (int)_list2.size())
     {
-        (*it).second = i;
-        it++;
-        i++;
+        i = 0;
+        it = _list2.begin();
+        _smallest = (*it);
+        tmp = it;
+        while(i < (int)_list2.size() - _times)
+        {
+            if((*it).first < _smallest.first)
+            {
+                _smallest = *it;
+                tmp = it;
+            }
+            it++;
+            i++;
+        }
+        _list2.splice(_list2.end(), _list2, tmp);
+        _times++;
     }
-    std::cout << "-------------------------------------------------------------------------" << std::endl;
-    std::cout << "Restore vec2" << std::endl;
-    displayVec(_vec2);
-}
-
-void PmergeMe::restoreKey2(void)
-{
-    std::vector<std::pair<int,int> >::iterator it = _vec.begin();
-    int i = 0;
-    while (it != _vec.end())
-    {
-        (*it).second = i;
-        it++;
-        i++;
-    }
-    std::cout << "-------------------------------------------------------------------------" << std::endl;
-    std::cout << "Restore vec" << std::endl;
-    displayVec(_vec);
+    std::list<std::pair<int, int> >::iterator it2 = _list.begin();
+    while((*it2).second != _list2.back().second)
+        it2++;
+    _list2.splice(_list2.end(), _list, it2);
 }
 
 
@@ -65,36 +128,61 @@ void PmergeMe::sortSmallest(void)
     std::pair<int, int> _smallest;
     int i = 1;
     int _times = 0;
+    int j = 0;
     while(_times < (int)_vec2.size())
     {
         i = 0;
-        _smallest.first = _vec.at(0).first;
+        _smallest = _vec2.at(0);
+        j = 0;
         while(i < (int)_vec2.size() - _times)
         {
             if(_vec2.at(i).first < _smallest.first)
             {
-                _smallest.first = _vec2.at(i).first;
-                _smallest.second = i;
+                _smallest = _vec2.at(i);
+                j = i;
             }
             i++;
         }
-        _vec2.push_back(_vec2.at(_smallest.second));
-        _vec2.erase(_vec2.begin() + _smallest.second);
+        _vec2.push_back(_vec2.at(j));
+        _vec2.erase(_vec2.begin() + j);
         _times++;
     }
     _vec2.push_back(_vec.at(_vec2.back().second));
     _vec.erase(_vec.begin() + _vec2.back().second);
-    std::cout << "-------------------------------------------------------------------------" << std::endl;
-    std::cout << "vec: " << std::endl;
-    displayVec(_vec);
-    std::cout << "Sort smallest vec2: " << std::endl;
-    displayVec(_vec2);
+
 }
+
+void PmergeMe::pairSort2(void)
+{
+    gettimeofday(&startTime2, NULL);
+    std::list<std::pair<int, int> >::iterator list_it = _list.begin();
+    std::list<std::pair<int, int> >::iterator list_it_next = _list.begin();
+    while(list_it != _list.end() && list_it_next != _list.end())
+    {
+        ++list_it_next;
+        if(*list_it < *list_it_next)
+        {
+            _list2.push_back(*list_it);
+            _list.erase(list_it);
+            list_it = list_it_next;
+        }
+        else
+        {
+            _list2.push_back(*list_it_next);
+            _list.erase(list_it_next);
+            list_it_next = list_it;
+        }
+        ++list_it_next;
+        list_it++;
+    }
+}
+
 
 void PmergeMe::pairSort(void)
 {
+    gettimeofday(&startTime, NULL);
     std::vector<std::pair<int, int> >::iterator it = _vec.begin();
-    while(*it != _vec.back())
+    while(it != _vec.end())
     {
         if(*it < *(it + 1))
         {
@@ -108,11 +196,18 @@ void PmergeMe::pairSort(void)
         }
         it++;
     }
-    std::cout << "Pair sort vec: " << std::endl;
-    displayVec(_vec);
-    std::cout << "Pair sort vec2: " << std::endl;
-    displayVec(_vec2);
 
+}
+
+void PmergeMe::displayList(std::list<std::pair<int, int> > vec)
+{
+    std::list<std::pair<int,int> >::iterator it = vec.begin();
+    while(it != vec.end())
+    {
+        std::cout << (*it).first << ' ';
+        it++;
+    }
+    std::cout << std::endl;
 }
 
 void PmergeMe::displayVec(std::vector<std::pair<int,int> > vec)
@@ -120,12 +215,27 @@ void PmergeMe::displayVec(std::vector<std::pair<int,int> > vec)
     std::vector<std::pair<int,int> >::iterator it = vec.begin();
     while(it != vec.end())
     {
-        std::cout << (*it).first << ";" << (*it).second << ' ' << std::endl;
+        std::cout << (*it).first << " ";
         it++;
     }
+    std::cout << std::endl;
 }
 
 
+void PmergeMe::addList2(char **av)
+{
+    int i = 1;
+    int j = 0;
+    while(av[i])
+    {
+        _list.push_back(std::make_pair(atoi(av[i]), j));
+        i++;
+        if(i % 2 == 1)
+            j++;
+    }
+    displayList(_list);
+
+}
 void PmergeMe::addList(char **av)
 {
     int i = 1;
@@ -137,7 +247,24 @@ void PmergeMe::addList(char **av)
         if(i % 2 == 1)
             j++;
     }
-    //displayVec(_vec);
+}
+
+int PmergeMe::parseVec()
+{
+    std::vector<std::pair<int, int> >::iterator it = _vec.begin();
+    std::vector<std::pair<int, int> >::iterator it2 = _vec.begin();
+    while(it != _vec.end())
+    {
+        it2 = _vec.begin();
+        while(it2 != _vec.end())
+        {
+            if(it != it2 && (*it).first == (*it2).first)
+                return 1;
+            it2++;
+        }
+        it++;
+    }
+    return 0;
 }
 
 int PmergeMe::parseList(char **av)
