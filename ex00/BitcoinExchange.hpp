@@ -19,6 +19,7 @@ public:
     BitcoinExchange(std::string arg_file);
     void BitcoinSetValues();
     void BitcoinFindValues();
+    void DisplayMap();
     std::string get_date(std::string line);
     std::string get_date_line(std::string line);
     float get_value(std::string line);

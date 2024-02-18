@@ -25,7 +25,7 @@ void PmergeMe::sortAllList(void)
     std::list<std::pair<int,int> >::iterator it2_bis = _list2.begin();
     while(it != _list.end())
     {
-        while((*it2).second != (*it).second)
+        while((*it2).second != (*it).second && *it2 != _list2.back())
             ++it2;
         while(it2 != _list2.end())
         {
@@ -154,12 +154,24 @@ void PmergeMe::sortSmallest(void)
 
 void PmergeMe::pairSort2(void)
 {
+    int even_odd = 0;
     gettimeofday(&startTime2, NULL);
     std::list<std::pair<int, int> >::iterator list_it = _list.begin();
     std::list<std::pair<int, int> >::iterator list_it_next = _list.begin();
-    while(list_it != _list.end() && list_it_next != _list.end())
+    ++list_it_next;
+    if(_list.size() % 2 == 1)
+        even_odd = 1;
+    while(list_it != _list.end())
     {
-        ++list_it_next;
+        if(*list_it == _list.back())
+        {
+            if(even_odd)
+            {
+                _list2.push_back(*list_it);
+                _list.erase(list_it);
+            }
+            break;
+        }
         if(*list_it < *list_it_next)
         {
             _list2.push_back(*list_it);
@@ -173,6 +185,7 @@ void PmergeMe::pairSort2(void)
             list_it_next = list_it;
         }
         ++list_it_next;
+        ++list_it_next;
         list_it++;
     }
 }
@@ -180,10 +193,22 @@ void PmergeMe::pairSort2(void)
 
 void PmergeMe::pairSort(void)
 {
+    int even_odd = 0;
     gettimeofday(&startTime, NULL);
     std::vector<std::pair<int, int> >::iterator it = _vec.begin();
+    if(_vec.size() % 2 == 1)
+        even_odd = 1;
     while(it != _vec.end())
     {
+        if(*it == _vec.back())
+        {
+            if(even_odd)
+            {
+                _vec2.push_back(*it);
+                _vec.erase(it);
+            }
+            break;
+        }
         if(*it < *(it + 1))
         {
             _vec2.push_back(*it);

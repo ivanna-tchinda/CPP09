@@ -21,6 +21,16 @@ BitcoinExchange::BitcoinExchange(std::string arg_file)
         return;
 }
 
+void BitcoinExchange::DisplayMap()
+{
+    std::map<std::string, float>::iterator it = btc_values.begin();
+    while(it != btc_values.end())
+    {
+        std::cout << (*it).first << " " << (*it).second << std::endl;
+        ++it;
+    }
+}
+
 std::string BitcoinExchange::get_date(std::string line)
 {
     int i = 0;
@@ -171,11 +181,15 @@ void BitcoinExchange::BitcoinFindValues()
             std::map<std::string, float>::iterator it = btc_values.begin();
             while(it != btc_values.end())
             {
-                if(_date.compare(it->first) == -1)
+                if(_date.compare(it->first) == 0)
                     break;
+                if(_date.compare(it->first) == -1)
+                {
+                    --it;
+                    break;
+                }
                 ++it;
             }
-            --it;
             std::cout << _date << " => " << _value << " = " << it->second * _value << std::endl;
             _date.clear();
             _date.clear();
