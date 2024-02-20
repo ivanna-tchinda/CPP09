@@ -10,7 +10,7 @@ int main(int ac, char **av)
     array = av[1];
     if(revpn.parseRPN(array))
         return 1;
-    revpn.addDeque(array);
-    revpn.calculDeque();
+    // revpn.addDeque();
+    revpn.calculStack(av[1]);
     return 0;
 }

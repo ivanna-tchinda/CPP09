@@ -3,18 +3,16 @@
 
 #include <iostream>
 #include <string>
-#include <deque>
+#include <stack>
 #include <cstdlib>
 
 class RPN
 {
 private:
-    std::deque<char> rpn_deque_int;
-    std::deque<char> rpn_deque_op;
+    std::stack<int> stack1;
+    std::stack<int> stack2;
 public:
-    void addDeque(std::string arr);
-    void displayDeque(std::deque<char> rpn_deque);
-    void calculDeque();
+    void calculStack(char *arr);
     int get_sign(char c);
     int parseRPN(std::string arr);
     RPN();
