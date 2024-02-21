@@ -51,6 +51,8 @@ std::string BitcoinExchange::get_date_line(std::string line)
     while (line[i] && (line[i] > 0 && line[i] < 33))
         i++;
     deb = i;
+    if(!isdigit(line[i]))
+        return _date;
     while (line[i] && isdigit(line[i]) && num--)
         i++;
     if(line[i++] != '-')
@@ -166,6 +168,16 @@ int BitcoinExchange::parse_date(std::string _date)
         return 1;
     if(error_line(_date) || _date.size() != 10)
         return 1;
+    std::string year = _date.substr(0, 4);
+    std::string month = _date.substr(5, 2);
+    std::string day = _date.substr(8, 2);
+    //jour avant le premier jour de data csv
+    if(year.compare("2008") == -1)
+        return 1;
+    if(month.compare("00") < 1 || month.compare("13") > -1)
+        return 1;
+    if(day.compare("00") < 1 || day.compare("32") > -1)
+        return 1;
     return 0;
 }
 
@@ -192,6 +204,11 @@ void BitcoinExchange::BitcoinFindValues()
                 continue;
             _date = get_date_line(_line);
             if(parse_date(_date))
+            {
+                std::cout << "Error: bad input => " << _line << std::endl;
+                continue;
+            }
+            if(is_value(_line))
             {
                 std::cout << "Error: bad input => " << _line << std::endl;
                 continue;
