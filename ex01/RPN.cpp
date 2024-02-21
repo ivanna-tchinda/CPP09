@@ -30,15 +30,15 @@ void RPN::calculStack(char *arr)
             continue;
         else if(get_sign(arr[i]) != -1)
         {
-            while(!stack1.empty())
+            if(stack1.size() < 2)
             {
-                stack2.push(stack1.top());
-                stack1.pop();
+                std::cout << "Error: not enough digits before operator" << std::endl;
+                return;
             }
-            tmp1 = stack2.top();
-            stack2.pop();
-            tmp2 = stack2.top();
-            stack2.pop();
+            tmp2 = stack1.top();
+            stack1.pop();
+            tmp1 = stack1.top();
+            stack1.pop();
             if(get_sign(arr[i]) == 1)
                 result = tmp1 * tmp2;
             else if(get_sign(arr[i]) == 2)
@@ -48,11 +48,6 @@ void RPN::calculStack(char *arr)
             else if(get_sign(arr[i]) == 4)
                 result = tmp1 / tmp2;
             stack1.push(result);
-            while(!stack2.empty())
-            {
-                stack1.push(stack2.top());
-                stack2.pop();
-            }
         }
         else
             stack1.push(arr[i] - 48);
@@ -73,15 +68,6 @@ int RPN::parseRPN(std::string arr)
     int i = 0;
     while(arr[i])
     {
-        if(get_sign(arr[i++]) != -1)
-        {
-            while(!isdigit(arr[i++]));
-            if(get_sign(arr[i]))
-            {
-                std::cout << "Error: negative number" << std::endl;
-                return(1);
-            }
-        }
         if(arr[i] == '(' || arr[i] == ')')
         {
             std::cout << "Error" << std::endl;
