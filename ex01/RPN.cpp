@@ -68,7 +68,7 @@ int RPN::parseRPN(std::string arr)
     int i = 0;
     while(arr[i])
     {
-        if(arr[i] == '(' || arr[i] == ')')
+        if(arr[i] != ' ' && !isalpha(arr[i]) && get_sign(arr[i]) == -1 && !(arr[i] > 47 && arr[i] < 56))
         {
             std::cout << "Error" << std::endl;
             return(1);
