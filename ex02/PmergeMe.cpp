@@ -278,6 +278,8 @@ int PmergeMe::parseVec()
 {
     std::vector<std::pair<int, int> >::iterator it = _vec.begin();
     std::vector<std::pair<int, int> >::iterator it2 = _vec.begin();
+    if(_vec.size() == 1)
+        return 1;
     while(it != _vec.end())
     {
         it2 = _vec.begin();

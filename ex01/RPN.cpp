@@ -46,7 +46,14 @@ void RPN::calculStack(char *arr)
             else if(get_sign(arr[i]) == 3)
                 result = tmp1 - tmp2;
             else if(get_sign(arr[i]) == 4)
+            {
+                if(tmp2 == 0)
+                {
+                    std::cout << "Error: division by 0" << std::endl;
+                    return;
+                }
                 result = tmp1 / tmp2;
+            }
             stack1.push(result);
         }
         else

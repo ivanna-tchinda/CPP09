@@ -44,11 +44,28 @@ std::string BitcoinExchange::get_date(std::string line)
 std::string BitcoinExchange::get_date_line(std::string line)
 {
     int i = 0;
-    std::string _date;
+    int deb = 0;
+    int num = 4;
+    std::string _date = "";
 
-    while(line[i] && line[i] != ' ' && line[i] != '|')
+    while (line[i] && (line[i] > 0 && line[i] < 33))
         i++;
-    _date = line.substr(0, i);
+    deb = i;
+    while (line[i] && isdigit(line[i]) && num--)
+        i++;
+    if(line[i++] != '-')
+        return _date;
+    num = 3;
+    while (line[i] && isdigit(line[i]) && --num)
+        i++;
+    if(line[i++] != '-')
+        return _date;
+    num = 3;
+    while (line[i] && isdigit(line[i]) && --num)
+        i++;
+    if(deb == i || i < deb || i < 10)
+        return _date;
+    _date = line.substr(deb, 10);
     return _date;
 }
 
@@ -143,13 +160,30 @@ int BitcoinExchange::error_line(std::string line)
     return 0;
 }
 
+int BitcoinExchange::parse_date(std::string _date)
+{
+    if(_date.size() == 0)
+        return 1;
+    if(error_line(_date) || _date.size() != 10)
+        return 1;
+    return 0;
+}
+
+int BitcoinExchange::parse_value(float _value)
+{
+    if(_value < 0)
+        return 1;
+    if(_value > 1000)
+        return 1;
+    return 0;
+}
+
 void BitcoinExchange::BitcoinFindValues()
 {
     std::string _line;
     std::string _date;
     float _value;
     std::string _lowest_bound;
-
     if(btc_file.is_open())
     {
         while(std::getline(btc_file, _line))
@@ -157,25 +191,15 @@ void BitcoinExchange::BitcoinFindValues()
             if(empty_line(_line))
                 continue;
             _date = get_date_line(_line);
-            if(_date.size() != 10 || error_line(_line))
-            {
-                std::cout << "Error: bad input => " << _date << std::endl;
-                continue;
-            }
-            if(is_value(_line))
+            if(parse_date(_date))
             {
                 std::cout << "Error: bad input => " << _line << std::endl;
                 continue;
             }
             _value = get_value_line(_line);
-            if(_value < 0)
+            if(parse_value(_value))
             {
-                std::cout << "Error: not a positive number" << std::endl;
-                continue;
-            }
-            if(_value > 1000)
-            {
-                std::cout << "Error: too large a number" << std::endl;
+                std::cout << "Error: bad input => " << _line << std::endl;
                 continue;
             }
             std::map<std::string, float>::iterator it = btc_values.begin();
@@ -192,7 +216,7 @@ void BitcoinExchange::BitcoinFindValues()
             }
             std::cout << _date << " => " << _value << " = " << it->second * _value << std::endl;
             _date.clear();
-            _date.clear();
+            //_date.clear();
         }
     }
     return;

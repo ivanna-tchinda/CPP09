@@ -27,6 +27,8 @@ public:
     int empty_line(std::string line);
     int is_value(std::string line);
     int error_line(std::string line);
+    int parse_date(std::string _date);
+    int parse_value(float _value);
     ~BitcoinExchange();
 };
 
