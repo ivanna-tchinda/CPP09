@@ -97,7 +97,7 @@ void PmergeMe::sortSmallest2(void)
     std::list<std::pair<int, int> >::iterator tmp = _list2.begin();
     int i = 1;
     int _times = 0;
-    if(_list.size() == 1)
+    if(_list2.size() == 1)
         return;
     while(_times < (int)_list2.size())
     {
@@ -123,6 +123,7 @@ void PmergeMe::sortSmallest2(void)
         it2++;
     if((int)_list.size() > (_list2.back()).second)
         _list2.splice(_list2.end(), _list, it2);
+    
 }
 
 /*void PmergeMe::restoreVec(void)
@@ -156,7 +157,8 @@ void PmergeMe::sortSmallest(void)
     int i = 1;
     int _times = 0;
     int j = 0;
-    if(_vec.size() == 1)
+
+    if(_vec2.size() == 1)
         return;
     while(_times < (int)_vec2.size())
     {
@@ -260,7 +262,7 @@ void PmergeMe::displayList(std::list<std::pair<int, int> > vec)
     std::list<std::pair<int,int> >::iterator it = vec.begin();
     while(it != vec.end())
     {
-        std::cout << (*it).first << ' '/* << (*it).second << std::endl*/;
+        std::cout << (*it).first << ' ';
         it++;
     }
     std::cout << std::endl;
@@ -271,7 +273,7 @@ void PmergeMe::displayVec(std::vector<std::pair<int,int> > vec)
     std::vector<std::pair<int,int> >::iterator it = vec.begin();
     while(it != vec.end())
     {
-        std::cout << (*it).first << " "/* << (*it).second << std::endl*/;
+        std::cout << (*it).first << " ";
         it++;
     }
     std::cout << std::endl;
