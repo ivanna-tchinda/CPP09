@@ -21,6 +21,7 @@ int main(int ac, char **av)
     }
     pmg.pairSort();
     pmg.sortSmallest();
+    //pmg.restoreVec();
     std::cout << "After: ";
     pmg.sortAll();
 

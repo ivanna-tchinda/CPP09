@@ -31,6 +31,7 @@ public:
     void pairSort2();
     void sortSmallest();
     void sortSmallest2();
+    //void restoreVec();
     void sortAll();
     void sortAllList();
     double elapsedTimeMicroseconds();
